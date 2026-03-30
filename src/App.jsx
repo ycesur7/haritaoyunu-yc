@@ -7,6 +7,7 @@ import MapillaryViewer from './components/MapillaryViewer';
 import ResultScreen from './components/ResultScreen';
 import { getRandomCountry, getRandomCoordinate } from './data/cities';
 import { calculateDistance, calculateScore } from './utils/distance';
+import { playApplause, playSuccess } from './utils/sounds';
 
 const MAX_ROUNDS = 5;
 const MAX_RETRIES = 15;
@@ -124,6 +125,13 @@ export default function App() {
       player2: prev.player2 + points2
     }));
 
+    // Ses efekti çal
+    if (distance1 < 100 || distance2 < 100) {
+      playApplause();
+    } else {
+      playSuccess();
+    }
+
     setGameState('result');
   };
 
@@ -239,10 +247,21 @@ export default function App() {
               className="px-8"
             >
               <div className="text-center mb-8">
-                <h2 className="text-5xl font-bold text-white mb-4">
-                  Bu görüntü nerede çekildi?
-                </h2>
-                <p className="text-3xl text-gray-300">Tur {round}/{MAX_ROUNDS}</p>
+                <motion.h2 
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  className="text-6xl font-bold text-white mb-4 drop-shadow-2xl"
+                >
+                  🌍 Bu görüntü nerede çekildi?
+                </motion.h2>
+                <motion.p 
+                  initial={{ y: -10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-4xl text-accent font-bold"
+                >
+                  Tur {round}/{MAX_ROUNDS}
+                </motion.p>
               </div>
 
               <div className="bg-slate-800/50 rounded-3xl overflow-hidden shadow-2xl border-4 border-purple-500/30 mb-8">

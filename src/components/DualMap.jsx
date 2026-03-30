@@ -21,16 +21,21 @@ function MapClickHandler({ onMapClick }) {
 
 function PlayerMap({ player, playerName, onGuess, guess, color }) {
   return (
-    <div className="relative h-full">
-      <div className={`absolute top-4 left-4 z-[1000] px-8 py-4 rounded-2xl text-3xl font-bold ${color} shadow-2xl`}>
+    <div className="relative h-full rounded-2xl overflow-hidden border-4 border-slate-700 shadow-2xl">
+      <motion.div 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className={`absolute top-6 left-6 z-[1000] px-10 py-5 rounded-2xl text-4xl font-bold ${color} shadow-2xl`}
+      >
         {playerName}
-      </div>
+      </motion.div>
       
       <MapContainer
         center={[20, 0]}
         zoom={2}
         style={{ width: '100%', height: '100%' }}
         zoomControl={true}
+        scrollWheelZoom={true}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -43,11 +48,16 @@ function PlayerMap({ player, playerName, onGuess, guess, color }) {
       </MapContainer>
 
       {guess && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-[1000]">
-          <div className="px-6 py-3 bg-green-600 text-white text-xl font-bold rounded-xl shadow-lg">
+        <motion.div 
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", bounce: 0.6 }}
+          className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-[1000]"
+        >
+          <div className="px-10 py-5 bg-green-600 text-white text-3xl font-bold rounded-2xl shadow-2xl border-2 border-green-400">
             ✓ Tahmin Yapıldı
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   );
@@ -61,9 +71,17 @@ export default function DualMap({ players, currentLocation, onGuess, guesses, on
       className="h-screen flex flex-col"
     >
       {/* Küçük fotoğraf üstte - referans için */}
-      <div className="flex justify-center py-6 bg-slate-900/80">
+      <motion.div 
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="flex justify-center py-6 bg-slate-900/90 border-b-4 border-accent/50"
+      >
         <div className="relative">
-          <div className="w-80 h-48 rounded-2xl overflow-hidden border-4 border-accent shadow-2xl">
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            className="w-96 h-56 rounded-2xl overflow-hidden border-4 border-accent shadow-2xl"
+          >
             {currentLocation.imageUrl ? (
               <img 
                 src={currentLocation.imageUrl} 
@@ -71,16 +89,21 @@ export default function DualMap({ players, currentLocation, onGuess, guesses, on
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-slate-700 flex items-center justify-center text-white text-xl">
+              <div className="w-full h-full bg-slate-700 flex items-center justify-center text-white text-2xl">
                 📷 Görüntü
               </div>
             )}
-          </div>
-          <div className="absolute -top-3 -right-3 bg-accent text-slate-900 px-4 py-2 rounded-full text-lg font-bold">
-            Referans
-          </div>
+          </motion.div>
+          <motion.div 
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.3, type: "spring" }}
+            className="absolute -top-3 -right-3 bg-accent text-slate-900 px-6 py-3 rounded-full text-xl font-bold shadow-xl"
+          >
+            📍 Referans
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* İki harita yan yana */}
       <div className="flex-1 grid grid-cols-2 gap-4 p-4">
@@ -104,15 +127,30 @@ export default function DualMap({ players, currentLocation, onGuess, guesses, on
       {/* Onayla butonu */}
       {guesses.player1 && guesses.player2 && (
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[1001]"
+          initial={{ opacity: 0, y: 50, scale: 0.8 }}
+          animate={{ 
+            opacity: 1, 
+            y: 0, 
+            scale: [0.8, 1.1, 1]
+          }}
+          transition={{ type: "spring", bounce: 0.5 }}
+          className="fixed bottom-12 left-1/2 transform -translate-x-1/2 z-[1001]"
         >
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.08, boxShadow: "0 0 40px rgba(34, 197, 94, 0.6)" }}
             whileTap={{ scale: 0.95 }}
+            animate={{ 
+              boxShadow: [
+                "0 0 20px rgba(34, 197, 94, 0.5)",
+                "0 0 40px rgba(34, 197, 94, 0.8)",
+                "0 0 20px rgba(34, 197, 94, 0.5)"
+              ]
+            }}
+            transition={{ 
+              boxShadow: { repeat: Infinity, duration: 1.5 }
+            }}
             onClick={onConfirm}
-            className="px-20 py-8 text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-3xl shadow-2xl border-4 border-green-400"
+            className="px-24 py-10 text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-3xl shadow-2xl border-4 border-green-400"
           >
             🎯 Sonuçları Göster
           </motion.button>

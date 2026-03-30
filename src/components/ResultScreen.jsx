@@ -32,6 +32,9 @@ export default function ResultScreen({ players, guesses, currentLocation, onNext
 
   const winner = distance1 < distance2 ? players.player1 : 
                  distance2 < distance1 ? players.player2 : 'Berabere';
+  
+  const isPlayer1Winner = distance1 < distance2;
+  const isPlayer2Winner = distance2 < distance1;
 
   const center = [
     (guesses.player1.lat + guesses.player2.lat + currentLocation.lat) / 3,
@@ -45,44 +48,93 @@ export default function ResultScreen({ players, guesses, currentLocation, onNext
         animate={{ opacity: 1, y: 0 }}
         className="max-w-7xl mx-auto"
       >
-        <h1 className="text-6xl font-bold text-center mb-8 text-accent">
+        <motion.h1 
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", bounce: 0.5 }}
+          className="text-7xl font-bold text-center mb-12 text-accent drop-shadow-2xl"
+        >
           🎯 Tur {round} Sonuçları
-        </h1>
+        </motion.h1>
 
         <div className="grid grid-cols-2 gap-8 mb-8">
           <motion.div
-            initial={{ x: -50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className={`bg-slate-800/90 rounded-3xl p-8 ${distance1 < distance2 ? 'border-4 border-green-500' : 'border-2 border-slate-600'}`}
+            initial={{ x: -100, opacity: 0, rotate: -5 }}
+            animate={{ 
+              x: 0, 
+              opacity: 1, 
+              rotate: 0,
+              scale: isPlayer1Winner ? [1, 1.05, 1] : 1
+            }}
+            transition={{ 
+              delay: 0.3,
+              scale: { repeat: isPlayer1Winner ? 2 : 0, duration: 0.5 }
+            }}
+            className={`bg-slate-800/90 rounded-3xl p-10 ${
+              isPlayer1Winner 
+                ? 'border-4 border-green-500 shadow-2xl shadow-green-500/50' 
+                : 'border-2 border-slate-600'
+            }`}
           >
-            <h3 className="text-3xl font-bold text-blue-400 mb-4">{players.player1}</h3>
-            <div className="space-y-3 text-xl text-gray-200">
-              <p><span className="font-bold">Mesafe:</span> {distance1.toFixed(2)} km</p>
-              <p><span className="font-bold">Puan:</span> <span className="text-3xl text-accent">{points1}</span></p>
+            <h3 className="text-4xl font-bold text-blue-400 mb-6">{players.player1}</h3>
+            <div className="space-y-4 text-2xl text-gray-200">
+              <p><span className="font-bold text-white">Mesafe:</span> {distance1.toFixed(2)} km</p>
+              <p><span className="font-bold text-white">Puan:</span> <span className="text-5xl text-accent font-bold">{points1}</span></p>
             </div>
+            {isPlayer1Winner && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="mt-6 text-6xl text-center"
+              >
+                🏆
+              </motion.div>
+            )}
           </motion.div>
 
           <motion.div
-            initial={{ x: 50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className={`bg-slate-800/90 rounded-3xl p-8 ${distance2 < distance1 ? 'border-4 border-green-500' : 'border-2 border-slate-600'}`}
+            initial={{ x: 100, opacity: 0, rotate: 5 }}
+            animate={{ 
+              x: 0, 
+              opacity: 1, 
+              rotate: 0,
+              scale: isPlayer2Winner ? [1, 1.05, 1] : 1
+            }}
+            transition={{ 
+              delay: 0.3,
+              scale: { repeat: isPlayer2Winner ? 2 : 0, duration: 0.5 }
+            }}
+            className={`bg-slate-800/90 rounded-3xl p-10 ${
+              isPlayer2Winner 
+                ? 'border-4 border-green-500 shadow-2xl shadow-green-500/50' 
+                : 'border-2 border-slate-600'
+            }`}
           >
-            <h3 className="text-3xl font-bold text-purple-400 mb-4">{players.player2}</h3>
-            <div className="space-y-3 text-xl text-gray-200">
-              <p><span className="font-bold">Mesafe:</span> {distance2.toFixed(2)} km</p>
-              <p><span className="font-bold">Puan:</span> <span className="text-3xl text-accent">{points2}</span></p>
+            <h3 className="text-4xl font-bold text-purple-400 mb-6">{players.player2}</h3>
+            <div className="space-y-4 text-2xl text-gray-200">
+              <p><span className="font-bold text-white">Mesafe:</span> {distance2.toFixed(2)} km</p>
+              <p><span className="font-bold text-white">Puan:</span> <span className="text-5xl text-accent font-bold">{points2}</span></p>
             </div>
+            {isPlayer2Winner && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1, rotate: [0, -10, 10, 0] }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="mt-6 text-6xl text-center"
+              >
+                🏆
+              </motion.div>
+            )}
           </motion.div>
         </div>
 
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4 }}
-          className="bg-slate-800/90 rounded-3xl overflow-hidden shadow-2xl mb-8"
-          style={{ height: '500px' }}
+          transition={{ delay: 0.6 }}
+          className="bg-slate-800/90 rounded-3xl overflow-hidden shadow-2xl mb-8 border-4 border-purple-500/30"
+          style={{ height: '600px' }}
         >
           <MapContainer
             center={center}
@@ -98,8 +150,8 @@ export default function ResultScreen({ players, guesses, currentLocation, onNext
             <Marker position={[currentLocation.lat, currentLocation.lng]} icon={actualIcon}>
               <Popup>
                 <div className="text-center font-bold">
-                  <div className="text-red-600">🎯 Gerçek Konum</div>
-                  <div>{currentLocation.countryName}</div>
+                  <div className="text-red-600 text-lg">🎯 Gerçek Konum</div>
+                  <div className="text-base">{currentLocation.countryName}</div>
                 </div>
               </Popup>
             </Marker>
@@ -107,7 +159,7 @@ export default function ResultScreen({ players, guesses, currentLocation, onNext
             {/* Oyuncu 1 tahmini - Mavi */}
             <Marker position={[guesses.player1.lat, guesses.player1.lng]}>
               <Popup>
-                <div className="font-bold text-blue-600">{players.player1}</div>
+                <div className="font-bold text-blue-600 text-base">{players.player1}</div>
                 <div>{distance1.toFixed(2)} km</div>
               </Popup>
             </Marker>
@@ -124,7 +176,7 @@ export default function ResultScreen({ players, guesses, currentLocation, onNext
             {/* Oyuncu 2 tahmini - Mor */}
             <Marker position={[guesses.player2.lat, guesses.player2.lng]}>
               <Popup>
-                <div className="font-bold text-purple-600">{players.player2}</div>
+                <div className="font-bold text-purple-600 text-base">{players.player2}</div>
                 <div>{distance2.toFixed(2)} km</div>
               </Popup>
             </Marker>
@@ -143,14 +195,22 @@ export default function ResultScreen({ players, guesses, currentLocation, onNext
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.8 }}
           className="text-center"
         >
-          <div className="text-4xl font-bold text-white mb-8">
+          <motion.div 
+            initial={{ scale: 0.8 }}
+            animate={{ scale: [0.8, 1.1, 1] }}
+            transition={{ delay: 0.9, duration: 0.6 }}
+            className="text-6xl font-bold text-white mb-10 drop-shadow-2xl"
+          >
             {winner === 'Berabere' ? '🤝 Bu Turda Berabere!' : `🏆 Bu Turu Kazanan: ${winner}`}
-          </div>
+          </motion.div>
 
           <motion.button
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 1 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onNext}
