@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { Viewer } from 'mapillary-js';
+import 'mapillary-js/dist/mapillary.css';
 
-export default function MapillaryViewer({ imageId, onError }) {
+export default function MapillaryViewer({ imageId, accessToken, onError }) {
   const containerRef = useRef(null);
   const viewerRef = useRef(null);
 
   useEffect(() => {
-    if (!imageId || !containerRef.current) return;
+    if (!imageId || !containerRef.current || !accessToken) return;
 
     try {
       if (viewerRef.current) {
@@ -15,7 +16,7 @@ export default function MapillaryViewer({ imageId, onError }) {
 
       const viewer = new Viewer({
         container: containerRef.current,
-        accessToken: import.meta.env.VITE_MAPILLARY_TOKEN,
+        accessToken: accessToken,
         imageId: imageId,
       });
 
@@ -30,13 +31,13 @@ export default function MapillaryViewer({ imageId, onError }) {
         viewerRef.current.remove();
       }
     };
-  }, [imageId, onError]);
+  }, [imageId, accessToken, onError]);
 
   return (
     <div 
       ref={containerRef} 
       className="w-full h-full"
-      style={{ minHeight: '600px' }}
+      style={{ minHeight: '700px' }}
     />
   );
 }

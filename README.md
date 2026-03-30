@@ -1,15 +1,16 @@
-# GeoDuel - Konum Tahmin Oyunu
+# GeoDuel - Konum Tahmin Düellosu
 
-Akıllı tahtalar için optimize edilmiş, 2 takımlı konum tahmin yarışması.
+Akıllı tahtalar için optimize edilmiş, 2 oyunculu konum tahmin yarışması.
 
 ## Özellikler
 
-- 🌍 Mapillary API ile 60+ ülkeden gerçek sokak görüntüleri
-- 🗺️ Leaflet.js ve OpenStreetMap ile tahmin haritası
-- 👥 2 takım yarışması (5 tur)
-- 📊 Mesafe bazlı puanlama sistemi
-- 📱 Dokunmatik ekran uyumlu (Smart Board)
-- 🎨 Dark mode tasarım
+- 🌍 Mapillary OAuth ile 60+ ülkeden gerçek sokak görüntüleri
+- 🗺️ Leaflet.js ve OpenStreetMap ile çift harita sistemi
+- 👥 2 oyuncu düellosu (5 tur)
+- 📊 Mesafe bazlı puanlama (5000 - mesafe*2)
+- 📱 Dokunmatik ekran uyumlu
+- 🎨 Animasyonlu geçişler
+- 🎯 Gerçek koordinat gösterimi
 
 ## Kurulum
 
@@ -17,12 +18,11 @@ Akıllı tahtalar için optimize edilmiş, 2 takımlı konum tahmin yarışması
 npm install
 ```
 
-## Mapillary API Token
+## Mapillary OAuth Kurulumu
 
-1. [Mapillary Developer Dashboard](https://www.mapillary.com/dashboard/developers) adresine git
-2. Yeni bir uygulama oluştur
-3. Client Token'ı kopyala
-4. `.env` dosyasındaki `VITE_MAPILLARY_TOKEN` değerini token'ınla değiştir
+OAuth zaten yapılandırılmış durumda. Client ID: `26346575774959071`
+
+İlk açılışta "Mapillary ile Giriş Yap" butonuna tıkla ve izin ver.
 
 ## Çalıştırma
 
@@ -34,19 +34,21 @@ Tarayıcıda `http://localhost:3000` adresini aç.
 
 ## Vercel'e Deploy
 
-```bash
-npm run build
-```
+Vercel'e deploy ederken environment variable eklemeye gerek yok, OAuth kullanıyor.
 
-Vercel'e deploy etmek için projeyi Vercel dashboard'a yükle. Environment Variables bölümüne `VITE_MAPILLARY_TOKEN` ekle.
+Sadece Vercel dashboard'da **Redirect URI** ayarla:
+- Mapillary Developer Dashboard → App Settings → Redirect URIs
+- Vercel URL'ini ekle: `https://senin-proje.vercel.app`
 
 ## Nasıl Oynanır?
 
-1. Takım isimlerini gir
-2. Görüntü dünya genelinde 60+ ülkeden rastgele yüklenir
-3. Sıradaki takım haritada tahmin yapar ve "Tahmini Onayla" butonuna basar
-4. Mesafeye göre puan kazanılır (5000 - mesafe*2)
-5. 5 tur sonunda en yüksek puanlı takım kazanır
+1. Mapillary ile giriş yap (ilk seferinde)
+2. Oyuncu isimlerini gir
+3. Fotoğraf tam ekran gösterilir
+4. "Tahmin Yap" butonuna bas
+5. Ekran ikiye bölünür, her oyuncu kendi haritasında tahmin yapar
+6. "Sonuçları Göster" - En yakın tahmin yapan kazanır
+7. 5 tur sonunda toplam puan yüksek olan kazanır
 
 ## Teknolojiler
 
@@ -54,5 +56,5 @@ Vercel'e deploy etmek için projeyi Vercel dashboard'a yükle. Environment Varia
 - Tailwind CSS
 - Framer Motion
 - Leaflet.js + React-Leaflet
-- Mapillary JS
+- Mapillary JS + OAuth
 - OpenStreetMap

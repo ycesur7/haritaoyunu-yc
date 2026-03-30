@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
-export default function TeamSetup({ onStart }) {
-  const [teamA, setTeamA] = useState('Takım A');
-  const [teamB, setTeamB] = useState('Takım B');
+export default function PlayerSetup({ onStart }) {
+  const [player1, setPlayer1] = useState('Oyuncu 1');
+  const [player2, setPlayer2] = useState('Oyuncu 2');
 
   const handleStart = () => {
-    onStart({ teamA, teamB });
+    onStart({ player1, player2 });
   };
 
   return (
@@ -19,25 +19,25 @@ export default function TeamSetup({ onStart }) {
         <h1 className="text-6xl font-bold text-center mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
           GeoDuel
         </h1>
-        <p className="text-2xl text-gray-300 text-center mb-12">Konum Tahmin Yarışması</p>
+        <p className="text-2xl text-gray-300 text-center mb-12">Konum Tahmin Düellosu</p>
 
         <div className="space-y-8">
           <div>
-            <label className="block text-2xl text-gray-300 mb-3">Takım A İsmi</label>
+            <label className="block text-2xl text-gray-300 mb-3">Oyuncu 1</label>
             <input
               type="text"
-              value={teamA}
-              onChange={(e) => setTeamA(e.target.value)}
+              value={player1}
+              onChange={(e) => setPlayer1(e.target.value)}
               className="w-full px-6 py-5 text-2xl bg-slate-700 text-white rounded-xl border-2 border-blue-500/50 focus:border-blue-400 focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-2xl text-gray-300 mb-3">Takım B İsmi</label>
+            <label className="block text-2xl text-gray-300 mb-3">Oyuncu 2</label>
             <input
               type="text"
-              value={teamB}
-              onChange={(e) => setTeamB(e.target.value)}
+              value={player2}
+              onChange={(e) => setPlayer2(e.target.value)}
               className="w-full px-6 py-5 text-2xl bg-slate-700 text-white rounded-xl border-2 border-purple-500/50 focus:border-purple-400 focus:outline-none"
             />
           </div>
