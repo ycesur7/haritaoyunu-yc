@@ -10,7 +10,7 @@ import { calculateDistance, calculateScore } from './utils/distance';
 
 const MAX_ROUNDS = 5;
 const MAX_RETRIES = 15;
-const CLIENT_ID = '26346575774959071';
+const MAPILLARY_TOKEN = import.meta.env.VITE_MAPILLARY_TOKEN;
 
 export default function App() {
   const [gameState, setGameState] = useState('setup');
@@ -21,32 +21,12 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [showMaps, setShowMaps] = useState(false);
   const [guesses, setGuesses] = useState({ player1: null, player2: null });
-  const [accessToken, setAccessToken] = useState(null);
-
-  // OAuth token'ı URL'den al
-  useEffect(() => {
-    const hash = window.location.hash;
-    if (hash) {
-      const params = new URLSearchParams(hash.substring(1));
-      const token = params.get('access_token');
-      if (token) {
-        setAccessToken(token);
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-    }
-  }, []);
 
   useEffect(() => {
-    if (gameState === 'playing' && !currentLocation && accessToken) {
+    if (gameState === 'playing' && !currentLocation) {
       fetchRandomLocation();
     }
-  }, [gameState, accessToken]);
-
-  const handleOAuthLogin = () => {
-    const redirectUri = window.location.origin + window.location.pathname;
-    const authUrl = `https://www.mapillary.com/connect?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=public:read`;
-    window.location.href = authUrl;
-  };
+  }, [gameState]);
 
   const fetchRandomLocation = async () => {
     setLoading(true);
@@ -58,7 +38,7 @@ export default function App() {
         const coord = getRandomCoordinate(country);
         
         const response = await fetch(
-          `https://graph.mapillary.com/images?access_token=${accessToken}&fields=id,geometry,thumb_2048_url&closeto=${coord.lng},${coord.lat}&limit=1`
+          `https://graph.mapillary.com/images?access_token=${MAPILLARY_TOKEN}&fields=id,geometry,thumb_2048_url&closeto=${coord.lng},${coord.lat}&limit=1`
         );
 
         const data = await response.json();
@@ -145,32 +125,6 @@ export default function App() {
     setCurrentLocation(null);
     setGuesses({ player1: null, player2: null });
   };
-
-  if (!accessToken) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 flex items-center justify-center p-8">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-slate-800/90 backdrop-blur-lg rounded-3xl p-16 max-w-2xl w-full shadow-2xl text-center"
-        >
-          <h1 className="text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            GeoDuel
-          </h1>
-          <p className="text-2xl text-gray-300 mb-12">Konum Tahmin Düellosu</p>
-          
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleOAuthLogin}
-            className="w-full py-8 text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-2xl shadow-lg"
-          >
-            🔐 Mapillary ile Giriş Yap
-          </motion.button>
-        </motion.div>
-      </div>
-    );
-  }
 
   if (gameState === 'setup') {
     return (
@@ -274,12 +228,12 @@ export default function App() {
               <div className="bg-slate-800/50 rounded-3xl overflow-hidden shadow-2xl border-4 border-purple-500/30 mb-8">
                 <MapillaryViewer
                   imageId={currentLocation.imageId}
-                  accessToken={accessToken}
+                  accessToken={MAPILLARY_TOKEN}
                   onError={fetchRandomLocation}
                 />
               </div>
 
-              <div className="flex justify-center">
+              <div className="flex justify-center gap-6">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -287,6 +241,15 @@ export default function App() {
                   className="px-20 py-10 text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-3xl shadow-2xl"
                 >
                   🗺️ Tahmin Yap
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={fetchRandomLocation}
+                  className="px-12 py-10 text-3xl font-bold bg-slate-700 hover:bg-slate-600 text-white rounded-3xl shadow-xl"
+                >
+                  ⏭️ Atla
                 </motion.button>
               </div>
             </motion.div>
