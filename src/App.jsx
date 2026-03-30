@@ -29,45 +29,65 @@ export default function App() {
   }, [gameState]);
 
   const fetchRandomLocation = async () => {
-    setLoading(true);
-    let retries = 0;
+      setLoading(true);
+      let retries = 0;
 
-    while (retries < MAX_RETRIES) {
-      try {
-        const country = getRandomCountry();
-        const coord = getRandomCoordinate(country);
-        
-        const response = await fetch(
-          `https://graph.mapillary.com/images?access_token=${MAPILLARY_TOKEN}&fields=id,geometry,thumb_2048_url&closeto=${coord.lng},${coord.lat}&limit=1`
-        );
+      while (retries < MAX_RETRIES) {
+        try {
+          const country = getRandomCountry();
+          const coord = getRandomCoordinate(country);
 
-        const data = await response.json();
+          // Mapillary API v4 - bbox kullanarak yakındaki görüntüleri ara
+          const radius = 0.05; // ~5km yarıçap
+          const bbox = `${coord.lng - radius},${coord.lat - radius},${coord.lng + radius},${coord.lat + radius}`;
 
-        if (data.data && data.data.length > 0) {
-          const image = data.data[0];
-          setCurrentLocation({
-            imageId: image.id,
-            lat: image.geometry.coordinates[1],
-            lng: image.geometry.coordinates[0],
-            countryName: country.name,
-            imageUrl: image.thumb_2048_url
-          });
-          setLoading(false);
-          setShowMaps(false);
-          setGuesses({ player1: null, player2: null });
-          return;
+          const response = await fetch(
+            `https://graph.mapillary.com/images?access_token=${MAPILLARY_TOKEN}&fields=id,geometry,thumb_2048_url&bbox=${bbox}&limit=10`,
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+
+          if (!response.ok) {
+            console.error('API Response:', response.status, response.statusText);
+            retries++;
+            continue;
+          }
+
+          const data = await response.json();
+          console.log('Mapillary response:', data);
+
+          if (data.data && data.data.length > 0) {
+            // Rastgele bir görüntü seç
+            const image = data.data[Math.floor(Math.random() * data.data.length)];
+
+            setCurrentLocation({
+              imageId: image.id,
+              lat: image.geometry.coordinates[1],
+              lng: image.geometry.coordinates[0],
+              countryName: country.name,
+              imageUrl: image.thumb_2048_url || null
+            });
+            setLoading(false);
+            setShowMaps(false);
+            setGuesses({ player1: null, player2: null });
+            return;
+          }
+
+          retries++;
+        } catch (error) {
+          console.error('Mapillary API hatası:', error);
+          retries++;
         }
-
-        retries++;
-      } catch (error) {
-        console.error('Mapillary API hatası:', error);
-        retries++;
       }
-    }
 
-    alert('Görüntü bulunamadı. Yeni görüntü deneniyor...');
-    setLoading(false);
-  };
+      alert('Görüntü bulunamadı. Yeni görüntü deneniyor...');
+      setLoading(false);
+      // Tekrar dene
+      setTimeout(() => fetchRandomLocation(), 1000);
+    };
 
   const handleGuess = (player, latlng) => {
     setGuesses(prev => ({

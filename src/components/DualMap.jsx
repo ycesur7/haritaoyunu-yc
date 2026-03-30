@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import { motion } from 'framer-motion';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -61,14 +60,25 @@ export default function DualMap({ players, currentLocation, onGuess, guesses, on
       animate={{ opacity: 1 }}
       className="h-screen flex flex-col"
     >
-      {/* Küçük fotoğraf üstte */}
-      <div className="flex justify-center py-4 bg-slate-900/50">
-        <div className="w-64 h-40 rounded-xl overflow-hidden border-4 border-accent shadow-xl">
-          <img 
-            src={currentLocation.imageUrl} 
-            alt="Konum" 
-            className="w-full h-full object-cover"
-          />
+      {/* Küçük fotoğraf üstte - referans için */}
+      <div className="flex justify-center py-6 bg-slate-900/80">
+        <div className="relative">
+          <div className="w-80 h-48 rounded-2xl overflow-hidden border-4 border-accent shadow-2xl">
+            {currentLocation.imageUrl ? (
+              <img 
+                src={currentLocation.imageUrl} 
+                alt="Konum" 
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-slate-700 flex items-center justify-center text-white text-xl">
+                📷 Görüntü
+              </div>
+            )}
+          </div>
+          <div className="absolute -top-3 -right-3 bg-accent text-slate-900 px-4 py-2 rounded-full text-lg font-bold">
+            Referans
+          </div>
         </div>
       </div>
 
@@ -102,7 +112,7 @@ export default function DualMap({ players, currentLocation, onGuess, guesses, on
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onConfirm}
-            className="px-20 py-8 text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-3xl shadow-2xl"
+            className="px-20 py-8 text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-3xl shadow-2xl border-4 border-green-400"
           >
             🎯 Sonuçları Göster
           </motion.button>
