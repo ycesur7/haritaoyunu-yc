@@ -22,6 +22,8 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [showMaps, setShowMaps] = useState(false);
   const [guesses, setGuesses] = useState({ player1: null, player2: null });
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [timerActive, setTimerActive] = useState(false);
 
   useEffect(() => {
     if (gameState === 'playing' && !currentLocation) {
@@ -152,6 +154,8 @@ export default function App() {
     setRound(1);
     setCurrentLocation(null);
     setGuesses({ player1: null, player2: null });
+    setTimeLeft(60);
+    setTimerActive(false);
   };
 
   if (gameState === 'setup') {
@@ -276,7 +280,11 @@ export default function App() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowMaps(true)}
+                  onClick={() => {
+                    setShowMaps(true);
+                    setTimeLeft(60);
+                    setTimerActive(true);
+                  }}
                   className="px-20 py-10 text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-3xl shadow-2xl"
                 >
                   🗺️ Tahmin Yap

@@ -19,7 +19,7 @@ function MapClickHandler({ onMapClick }) {
   return null;
 }
 
-function PlayerMap({ player, playerName, onGuess, guess, color }) {
+function PlayerMap({ playerName, onGuess, guess, color }) {
   return (
     <div className="relative h-full rounded-2xl overflow-hidden border-4 border-slate-700 shadow-2xl">
       <motion.div 
@@ -63,20 +63,38 @@ function PlayerMap({ player, playerName, onGuess, guess, color }) {
   );
 }
 
-export default function DualMap({ players, currentLocation, onGuess, guesses, onConfirm }) {
+export default function DualMap({ players, currentLocation, onGuess, guesses, onConfirm, timeLeft, timerActive }) {
+  const isTimeRunningOut = timeLeft <= 10;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="h-screen flex flex-col"
     >
-      {/* Küçük fotoğraf üstte - referans için */}
+      {/* Timer ve Küçük fotoğraf üstte */}
       <motion.div 
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="flex justify-center py-6 bg-slate-900/90 border-b-4 border-accent/50"
+        className="flex justify-between items-center py-6 px-8 bg-slate-900/90 border-b-4 border-accent/50"
       >
+        {/* Timer - Sol taraf */}
+        {timerActive && (
+          <motion.div
+            animate={isTimeRunningOut ? {
+              scale: [1, 1.15, 1],
+              color: ['#fbbf24', '#ef4444', '#fbbf24']
+            } : {}}
+            transition={{ repeat: isTimeRunningOut ? Infinity : 0, duration: 0.5 }}
+            className={`text-6xl font-bold ${isTimeRunningOut ? 'text-red-500' : 'text-accent'} drop-shadow-2xl`}
+          >
+            ⏱️ {timeLeft}s
+          </motion.div>
+        )}
+        {!timerActive && <div className="w-32"></div>}
+
+        {/* Fotoğraf - Orta */}
         <div className="relative">
           <motion.div 
             whileHover={{ scale: 1.05 }}
@@ -103,12 +121,14 @@ export default function DualMap({ players, currentLocation, onGuess, guesses, on
             📍 Referans
           </motion.div>
         </div>
+
+        {/* Boş alan - Sağ taraf (simetri için) */}
+        <div className="w-32"></div>
       </motion.div>
 
       {/* İki harita yan yana */}
       <div className="flex-1 grid grid-cols-2 gap-4 p-4">
         <PlayerMap
-          player="player1"
           playerName={players.player1}
           onGuess={(latlng) => onGuess('player1', latlng)}
           guess={guesses.player1}
@@ -116,7 +136,6 @@ export default function DualMap({ players, currentLocation, onGuess, guesses, on
         />
         
         <PlayerMap
-          player="player2"
           playerName={players.player2}
           onGuess={(latlng) => onGuess('player2', latlng)}
           guess={guesses.player2}
