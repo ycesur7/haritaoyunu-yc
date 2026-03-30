@@ -229,7 +229,7 @@ export default function App() {
         round={round}
       />
 
-      <div className="pt-32 pb-8">
+      <div className="pt-20 pb-8">
         {loading && (
           <div className="flex items-center justify-center h-screen">
             <div className="text-5xl text-white font-bold animate-pulse">🌍 Görüntü yükleniyor...</div>
